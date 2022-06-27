@@ -21,8 +21,13 @@ func (h *Hippocampus) Set(key string, data interface{}) {
     h.engine.Set(key, data)
 } 
 
-func (h Hippocampus) Get(key string, result interface{}) {
-    result = h.engine.Get(key)
+func (h Hippocampus) Get(key string) (interface{}, bool) {
+    if h.engine.Exists(key) {
+        result := h.engine.Get(key)
+        return result, true
+    }else{
+        return nil, true
+    }
 } 
 
 func (h *Hippocampus) Delete(key string) {
@@ -33,12 +38,13 @@ func (h Hippocampus) Exists(key string) bool {
     return h.engine.Exists(key)
 }
 
-func (h *Hippocampus) Fetch(key string, result interface{}, callback func() interface{}) {
+func (h *Hippocampus) Fetch(key string, callback func() interface{}) interface{} {
     if h.Exists(key) {
-        h.Get(key, result)
+        result, _ := h.Get(key)
+        return result
     }else{
         data := callback()
         h.Set(key, data)
-        result = data
+        return data
     }
 }
