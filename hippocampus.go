@@ -26,7 +26,7 @@ func (h Hippocampus) Get(key string) (interface{}, bool) {
         result := h.engine.Get(key)
         return result, true
     }else{
-        return nil, true
+        return nil, false
     }
 } 
 
