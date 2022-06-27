@@ -1,4 +1,4 @@
-package main
+package hippocampus
 
 type Engine interface {
     Set(key string, data interface{})
