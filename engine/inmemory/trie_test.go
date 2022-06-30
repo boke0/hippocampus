@@ -57,3 +57,13 @@ func TestTrieDelete(t *testing.T) {
         })
     }
 }
+
+func TestTrieKeys(t *testing.T) {
+    trie, _ := SeedTrie()
+    keys := trie.Keys()
+    for _, key := range keys {
+        if !trie.Exists(key) {
+            t.Errorf("invalid key")
+        }
+    }
+}

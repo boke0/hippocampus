@@ -69,3 +69,20 @@ func (t Trie) Exists(key []byte) bool {
 	}
 	return result.data != nil
 }
+
+func (t Trie) Keys() [][]byte {
+	keys := [][]byte{}
+	for c, p := range t.dict {
+		if p != nil {
+			for _, k := range p.Keys() {
+				k_ := []byte{c}
+				k_ = append(k_, k...)
+				keys = append(keys, k_)
+			}
+		}
+	}
+	if t.data != nil {
+		keys = append(keys, []byte{})
+	}
+	return keys
+}
