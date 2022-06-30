@@ -39,7 +39,7 @@ func (h Hippocampus) Exists(key string) bool {
 	return h.engine.Exists(key)
 }
 
-func (h Hippocampus) Keys(key string) []string {
+func (h Hippocampus) Keys() []string {
 	return h.engine.Keys()
 }
 
