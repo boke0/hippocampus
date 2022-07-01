@@ -9,22 +9,22 @@ type Engine interface {
 }
 
 type Hippocampus struct {
-	engine Engine
+	Engine Engine
 }
 
-func NewHippocampus(engine Engine) Hippocampus {
+func NewHippocampus(Engine Engine) Hippocampus {
 	return Hippocampus{
-		engine,
+		Engine,
 	}
 }
 
 func (h *Hippocampus) Set(key string, data interface{}) {
-	h.engine.Set(key, data)
+	h.Engine.Set(key, data)
 }
 
 func (h Hippocampus) Get(key string) (interface{}, bool) {
-	if h.engine.Exists(key) {
-		result := h.engine.Get(key)
+	if h.Engine.Exists(key) {
+		result := h.Engine.Get(key)
 		return result, true
 	} else {
 		return nil, false
@@ -32,15 +32,15 @@ func (h Hippocampus) Get(key string) (interface{}, bool) {
 }
 
 func (h *Hippocampus) Delete(key string) {
-	h.engine.Delete(key)
+	h.Engine.Delete(key)
 }
 
 func (h Hippocampus) Exists(key string) bool {
-	return h.engine.Exists(key)
+	return h.Engine.Exists(key)
 }
 
 func (h Hippocampus) Keys() []string {
-	return h.engine.Keys()
+	return h.Engine.Keys()
 }
 
 func (h *Hippocampus) Fetch(key string, callback func() interface{}) interface{} {
