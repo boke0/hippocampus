@@ -3,6 +3,7 @@ package inmemory
 import (
 	"encoding/json"
 	"os"
+	"path"
 )
 
 type InmemoryEngine struct {
@@ -48,14 +49,16 @@ func (engine InmemoryEngine) Export(filename string) {
     if err != nil {
         panic(err)
     }
-    if err := os.WriteFile(filename, jsonBytes, 0o644); err != nil {
+    cwd, _ := os.Getwd()
+    if err := os.WriteFile(path.Join(cwd, filename), jsonBytes, 0o644); err != nil {
         panic(err)
     }
 }
 
 func (engine *InmemoryEngine) Import(filename string) {
     dict := make(map[string]interface{})
-    jsonBytes, err := os.ReadFile(filename)
+    cwd, _ := os.Getwd()
+    jsonBytes, err := os.ReadFile(path.Join(cwd, filename))
     if err != nil {
         panic(err)
     }
