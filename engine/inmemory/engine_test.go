@@ -1,6 +1,7 @@
 package inmemory_test
 
 import (
+	"encoding/hex"
 	"math/rand"
 	"testing"
 	"time"
@@ -16,13 +17,20 @@ func randomByte() []byte {
 	return b
 }
 
-func SeedEngine() (InmemoryEngine, map[string][]byte) {
+type TestData struct {
+	D string `json:"d"`
+}
+
+func SeedEngine() (InmemoryEngine, map[string]TestData) {
 	engine := NewInmemoryEngine()
-	dict := make(map[string][]byte)
+	dict := make(map[string]TestData)
 	for i := 0; i < 1000; i++ {
 		key := randomByte()
-		engine.Set(string(key), key)
-		dict[string(key)] = key
+		t := TestData {
+			D: hex.EncodeToString(key),
+		}
+		engine.Set(hex.EncodeToString(key), t)
+		dict[hex.EncodeToString(key)] = t
 	}
 	return engine, dict
 }
@@ -33,8 +41,8 @@ func TestEngineGet(t *testing.T) {
 		t.Run(key, func(t *testing.T) {
 			result := engine.Get(key)
 			if result != nil {
-				resultBytes := result.([]byte)
-				if string(resultBytes) != string(value) {
+				resultT, _ := result.(TestData)
+				if resultT.D != value.D {
 					t.Errorf("not matched")
 				}
 			} else {
@@ -65,5 +73,22 @@ func TestEngineDelete(t *testing.T) {
 				t.Errorf("found")
 			}
 		})
+	}
+}
+
+func TestEngineExportAndImport(t *testing.T) {
+	engine, dict := SeedEngine()
+	engine.Export("./test/exported.json")
+	engine.Clear()
+	engine.Import("./test/exported.json")
+	for key := range dict {
+		if !t.Run(key, func(t *testing.T) {
+			result := engine.Exists(key)
+			if !result {
+				t.Errorf("not found")
+			}
+		}) {
+			break
+		}
 	}
 }

@@ -1,5 +1,10 @@
 package inmemory
 
+import (
+	"encoding/json"
+	"os"
+)
+
 type InmemoryEngine struct {
     trie Trie
 }
@@ -34,3 +39,34 @@ func (engine InmemoryEngine) Keys() []string {
     return keys
 }
 
+func (engine InmemoryEngine) Export(filename string) {
+    dict := make(map[string]interface{})
+    for _, key := range engine.Keys() {
+        dict[key] = engine.Get(key)
+    }
+    jsonBytes, err := json.Marshal(dict)
+    if err != nil {
+        panic(err)
+    }
+    if err := os.WriteFile(filename, jsonBytes, 0o644); err != nil {
+        panic(err)
+    }
+}
+
+func (engine *InmemoryEngine) Import(filename string) {
+    dict := make(map[string]interface{})
+    jsonBytes, err := os.ReadFile(filename)
+    if err != nil {
+        panic(err)
+    }
+    if err := json.Unmarshal(jsonBytes, &dict); err != nil {
+        panic(err)
+    }
+    for key, data := range dict {
+        engine.Set(key, data)
+    }
+}
+
+func (engine *InmemoryEngine) Clear() {
+    engine.trie = NewTrie()
+}
