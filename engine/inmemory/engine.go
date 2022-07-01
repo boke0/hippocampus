@@ -55,14 +55,14 @@ func (engine InmemoryEngine) Export(filename string) {
     }
 }
 
-func (engine *InmemoryEngine) Import(filename string) {
-    dict := make(map[string]interface{})
+func (engine *InmemoryEngine) Import(filename string, parse func(bytes []byte) (map[string]interface{}, error)) {
     cwd, _ := os.Getwd()
     jsonBytes, err := os.ReadFile(path.Join(cwd, filename))
     if err != nil {
         panic(err)
     }
-    if err := json.Unmarshal(jsonBytes, &dict); err != nil {
+    dict, err := parse(jsonBytes)
+    if err != nil {
         panic(err)
     }
     for key, data := range dict {
