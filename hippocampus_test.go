@@ -17,8 +17,8 @@ func randomByte() []byte {
 	return b
 }
 
-func SeedHippocampus() (Hippocampus, map[string][]byte) {
-	hippocampus := NewHippocampus(NewInmemoryEngine())
+func SeedHippocampus() (Hippocampus[[]byte], map[string][]byte) {
+	hippocampus := NewHippocampus[[]byte](NewInmemoryEngine[[]byte]())
 	dict := make(map[string][]byte)
 	for i := 0; i < 1000; i++ {
 		key := randomByte()
@@ -33,7 +33,7 @@ func TestHippocampusGet(t *testing.T) {
 	for key, value := range dict {
 		t.Run(key, func(t *testing.T) {
 			result, _ := hippocampus.Get(key)
-			if string(result.([]byte)) != string(value) {
+			if string(*result) != string(value) {
 				t.Errorf("not matched")
 			}
 		})

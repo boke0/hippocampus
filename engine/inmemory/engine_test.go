@@ -21,8 +21,8 @@ type TestData struct {
 	D string `json:"d"`
 }
 
-func SeedEngine() (InmemoryEngine, map[string]TestData) {
-	engine := NewInmemoryEngine()
+func SeedEngine() (InmemoryEngine[TestData], map[string]TestData) {
+	engine := NewInmemoryEngine[TestData]()
 	dict := make(map[string]TestData)
 	for i := 0; i < 1000; i++ {
 		key := randomByte()
@@ -41,8 +41,7 @@ func TestEngineGet(t *testing.T) {
 		t.Run(key, func(t *testing.T) {
 			result := engine.Get(key)
 			if result != nil {
-				resultT, _ := result.(TestData)
-				if resultT.D != value.D {
+				if result.D != value.D {
 					t.Errorf("not matched")
 				}
 			} else {
