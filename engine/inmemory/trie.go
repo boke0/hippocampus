@@ -1,37 +1,36 @@
 package inmemory
 
-type Trie struct {
-	dict map[byte]*Trie
-	data    interface{}
+type Trie[T any] struct {
+	dict map[byte]*Trie[T]
+	data *T
 }
 
-func NewTrie() Trie {
-	return Trie {
-		dict: make(map[byte]*Trie),
-		data: nil,
+func NewTrie[T any]() Trie[T] {
+	return Trie[T]{
+		dict: make(map[byte]*Trie[T]),
 	}
 }
 
-func (t *Trie) Insert(key []byte, data interface{}) {
+func (t *Trie[T]) Insert(key []byte, data T) {
 	c := key[0]
 	next, ok := t.dict[c]
 	if !ok || next == nil {
-		newTrie := NewTrie()
+		newTrie := NewTrie[T]()
 		t.dict[c] = &newTrie
 		next = &newTrie
 	}
 	if len(key) > 1 {
 		next.Insert(key[1:], data)
 	} else {
-		next.data = data
+		next.data = &data
 	}
 }
 
-func (t Trie) Find(key []byte) *Trie {
+func (t Trie[T]) Find(key []byte) *Trie[T] {
 	c := key[0]
 	nextTrie, ok := t.dict[c]
 	if !ok {
-		return nil 
+		return nil
 	}
 	if len(key) > 1 {
 		return nextTrie.Find(key[1:])
@@ -40,16 +39,16 @@ func (t Trie) Find(key []byte) *Trie {
 	}
 }
 
-func (t Trie) Get(key []byte) interface{} {
+func (t Trie[T]) Get(key []byte) *T {
 	result := t.Find(key)
 	if result != nil {
 		return result.data
-	}else{
+	} else {
 		return nil
 	}
 }
 
-func (t *Trie) Delete(key []byte) {
+func (t *Trie[T]) Delete(key []byte) {
 	c := key[0]
 	next := t.dict[c]
 	if next == nil {
@@ -62,7 +61,7 @@ func (t *Trie) Delete(key []byte) {
 	}
 }
 
-func (t Trie) Exists(key []byte) bool {
+func (t Trie[T]) Exists(key []byte) bool {
 	result := t.Find(key)
 	if result == nil {
 		return false
@@ -70,7 +69,7 @@ func (t Trie) Exists(key []byte) bool {
 	return result.data != nil
 }
 
-func (t Trie) Keys() [][]byte {
+func (t Trie[T]) Keys() [][]byte {
 	keys := [][]byte{}
 	for c, p := range t.dict {
 		if p != nil {
